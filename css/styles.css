@@ -1,0 +1,167 @@
+/* ===== GLOBAL LAYOUT ===== */
+body {
+  margin: 0;
+  font-family: Arial, sans-serif;
+  background: #f0f0f0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+/* ===== NAVIGATION BAR ===== */
+.navbar {
+  width: 100%;
+  background: #222;
+  color: white;
+  padding: 10px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  position: relative;
+  z-index: 5000; /* Above normal canvas, below fullscreen UI */
+}
+
+.navbar button {
+  background: #444;
+  color: white;
+  border: none;
+  padding: 6px 12px;
+  cursor: pointer;
+}
+
+.navbar button:hover {
+  background: #666;
+}
+
+.nav-arrow {
+  background: #444;
+  color: white;
+  border: none;
+  padding: 8px 14px;
+  font-size: 20px;
+  cursor: pointer;
+}
+
+.nav-arrow:hover {
+  background: #666;
+}
+
+.nav-center {
+  display: flex;
+  gap: 10px;
+}
+
+.nav-center button {
+  background: #333;
+  color: white;
+  border: none;
+  padding: 6px 12px;
+  cursor: pointer;
+}
+
+.nav-center button:hover {
+  background: #555;
+}
+
+/* ===== HOME PAGE BUTTONS ===== */
+.home-buttons-container {
+  display: flex;
+  gap: 20px;
+  flex-wrap: wrap;
+  justify-content: center;
+  margin-top: 40px;
+}
+
+.home-button {
+  width: 200px;
+  height: 200px;
+  background: #fff;
+  border: 2px solid #ccc;
+  border-radius: 10px;
+  cursor: pointer;
+  text-align: center;
+  transition: transform 0.2s, box-shadow 0.2s;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  padding: 10px;
+}
+
+.home-button:hover {
+  transform: scale(1.05);
+  box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+}
+
+.home-button img {
+  width: 100%;
+  height: 140px;
+  object-fit: cover;
+  border-radius: 6px;
+}
+
+.home-button p {
+  margin: 0;
+  font-size: 18px;
+  font-weight: bold;
+}
+
+/* ===== IDLE GAME CONTAINERS ===== */
+.container {
+  margin-top: 40px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 10px;
+  position: relative; /* Needed for resize handle */
+}
+
+canvas {
+  border: 2px solid #000;
+  background-color: #fff;
+}
+
+/* Resize handle for Squares */
+#canvasResizeHandle {
+  width: 15px;
+  height: 15px;
+  background: #333;
+  position: absolute;
+  cursor: se-resize;
+}
+
+/* ===== FULLSCREEN MODE ===== */
+
+/* Fullscreen canvas sits above the page but below UI */
+.fullscreen-canvas {
+  position: fixed !important;
+  top: 0;
+  left: 0;
+  width: 100vw !important;
+  height: 100vh !important;
+  z-index: 9000 !important;
+}
+
+/* UI elements that must appear above the fullscreen canvas */
+.fullscreen-ui {
+  position: fixed !important;
+  bottom: 20px !important;
+  left: 50% !important;
+  transform: translateX(-50%) !important;
+  z-index: 99999 !important;
+  pointer-events: auto !important;
+}
+
+/* Fullscreen button styling */
+#fullscreenBtn {
+  padding: 6px 12px;
+  font-size: 14px;
+}
+
+/* Bubble score needs special fullscreen placement */
+#bubbleScore.fullscreen-ui {
+  top: 20px !important;
+  bottom: auto !important;
+  color: white !important;
+  font-size: 24px;
+  z-index: 99999 !important;
+}

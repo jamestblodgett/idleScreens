@@ -1,0 +1,184 @@
+// ===== Canvas Setup =====
+const canvas = document.getElementById('idleCanvas');
+const ctx = canvas.getContext('2d');
+const baseSquareSize = 50;
+
+let squares = [];
+
+// ===== Canvas Resize Handle =====
+const handle = document.getElementById('canvasResizeHandle');
+let isCanvasResizing = false;
+
+function positionHandle() {
+  const rect = canvas.getBoundingClientRect();
+  const containerRect = canvas.parentElement.getBoundingClientRect();
+
+  handle.style.left = `${rect.left - containerRect.left + canvas.width - handle.offsetWidth}px`;
+  handle.style.top = `${rect.top - containerRect.top + canvas.height - handle.offsetHeight}px`;
+}
+
+window.addEventListener('resize', positionHandle);
+window.addEventListener('load', positionHandle);
+
+handle.addEventListener('mousedown', () => {
+  isCanvasResizing = true;
+});
+
+window.addEventListener('mousemove', (e) => {
+  if (isCanvasResizing) {
+    const rect = canvas.getBoundingClientRect();
+    const newWidth = e.clientX - rect.left;
+    const newHeight = e.clientY - rect.top;
+
+    canvas.width = Math.max(200, newWidth);
+    canvas.height = Math.max(150, newHeight);
+
+    positionHandle();
+  }
+});
+
+window.addEventListener('mouseup', () => {
+  isCanvasResizing = false;
+});
+
+// ===== Square Logic =====
+function getRandomPosition() {
+  const x = Math.random() * (canvas.width - baseSquareSize);
+  const y = Math.random() * (canvas.height - baseSquareSize);
+  const vx = (Math.random() < 0.5 ? -1 : 1) * 2;
+  const vy = (Math.random() < 0.5 ? -1 : 1) * 2;
+  const color = `hsl(${Math.random() * 360}, 70%, 60%)`;
+
+  return { x, y, vx, vy, color, width: baseSquareSize, height: baseSquareSize };
+}
+
+function isColliding(a, b) {
+  return (
+    a.x < b.x + b.width &&
+    a.x + a.width > b.x &&
+    a.y < b.y + b.height &&
+    a.y + a.height > b.y
+  );
+}
+
+function resolveCollision(a, b) {
+  const ax = a.x + a.width / 2;
+  const ay = a.y + a.height / 2;
+  const bx = b.x + b.width / 2;
+  const by = b.y + b.height / 2;
+
+  const dx = bx - ax;
+  const dy = by - ay;
+  const dist = Math.sqrt(dx * dx + dy * dy);
+
+  if (dist === 0) return;
+
+  const nx = dx / dist;
+  const ny = dy / dist;
+
+  const dvx = b.vx - a.vx;
+  const dvy = b.vy - a.vy;
+
+  const velAlongNormal = dvx * nx + dvy * ny;
+  if (velAlongNormal > 0) return;
+
+  const restitution = 1;
+  const impulse = -(1 + restitution) * velAlongNormal / 2;
+
+  const impulseX = impulse * nx;
+  const impulseY = impulse * ny;
+
+  a.vx -= impulseX;
+  a.vy -= impulseY;
+  b.vx += impulseX;
+  b.vy += impulseY;
+}
+
+function correctOverlap(a, b) {
+  const overlapX = Math.min(a.x + a.width - b.x, b.x + b.width - a.x);
+  const overlapY = Math.min(a.y + a.height - b.y, b.y + b.height - a.y);
+
+  if (overlapX < overlapY) {
+    const correction = overlapX / 2;
+    if (a.x < b.x) {
+      a.x -= correction;
+      b.x += correction;
+    } else {
+      a.x += correction;
+      b.x -= correction;
+    }
+  } else {
+    const correction = overlapY / 2;
+    if (a.y < b.y) {
+      a.y -= correction;
+      b.y += correction;
+    } else {
+      a.y += correction;
+      b.y -= correction;
+    }
+  }
+}
+
+function drawSquare(square) {
+  ctx.fillStyle = square.color;
+  ctx.fillRect(square.x, square.y, square.width, square.height);
+}
+
+// ===== Animation Loop =====
+function animate() {
+  for (let i = 0; i < squares.length; i++) {
+    for (let j = i + 1; j < squares.length; j++) {
+      if (isColliding(squares[i], squares[j])) {
+        resolveCollision(squares[i], squares[j]);
+        correctOverlap(squares[i], squares[j]);
+      }
+    }
+  }
+
+  document.getElementById('squareCount').textContent = `Squares: ${squares.length}`;
+  ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+  for (let square of squares) {
+    square.x += square.vx;
+    square.y += square.vy;
+
+    if (square.x + square.width > canvas.width || square.x < 0) {
+      square.vx = -square.vx;
+      square.color = `hsl(${Math.random() * 360}, 70%, 60%)`;
+      square.x = Math.min(Math.max(square.x, 0), canvas.width - square.width);
+    }
+    if (square.y + square.height > canvas.height || square.y < 0) {
+      square.vy = -square.vy;
+      square.color = `hsl(${Math.random() * 360}, 70%, 60%)`;
+      square.y = Math.min(Math.max(square.y, 0), canvas.height - square.height);
+    }
+
+    drawSquare(square);
+  }
+
+  requestAnimationFrame(animate);
+}
+
+// ===== Button Events =====
+document.getElementById('addSquareBtn').addEventListener('click', () => {
+  squares.push(getRandomPosition());
+});
+
+document.getElementById('removeSquareBtn').addEventListener('click', () => {
+  squares.pop();
+});
+
+// ===== Start =====
+animate();
+positionHandle();
+
+// ===== Fullscreen Hook =====
+window.addEventListener("load", () => {
+  if (typeof enableFullscreen === "function") {
+    enableFullscreen(canvas, [
+      document.getElementById("fullscreenBtn"),
+      document.getElementById("addSquareBtn"),
+      document.getElementById("removeSquareBtn")
+    ]);
+  }
+});

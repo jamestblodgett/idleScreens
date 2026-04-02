@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Idle Screen – Fish Tank</title>
+  <link rel="stylesheet" href="css/styles.css">
+</head>
+<body>
+
+  <script src="js/navigation.js"></script>
+  <script src="js/fullscreen.js"></script>
+  <script>
+    loadNavigation();
+  </script>
+
+  <div class="container">
+    <canvas id="fishCanvas" width="1000" height="500"></canvas>
+    <div style="margin-top: 10px;">
+    <div style="margin-top: 10px;">
+    <label for="fishTypeSelect">Fish Type:</label>
+    <select id="fishTypeSelect">
+        <option value="normal">Normal (Purple/Orange/Blue)</option>
+        <option value="shy">Shy (Lime)</option>
+        <option value="bold">Bold (Red)</option>
+        <option value="lazy">Lazy (Indigo)</option>
+        <option value="hyper">Hyper (Yellow)</option>
+        <option value="pair">Pair (Pink/Cyan)</option>
+        <option value="big">Big (Green)</option>
+    </select>
+    
+</div>
+
+<div style="margin-top: 10px;">
+    <button id="addFishBtn">Add Fish</button>
+    <button id="removeFishBtn">Remove Fish</button>
+</div>
+
+
+
+    <!-- We'll show info here later if we want -->
+    <p id="fishInfo">Fish Tank - press the Fish button in the navigation bar to reload the tank</p>
+
+    <button id="fullscreenBtn">Fullscreen</button>
+  </div>
+
+  <script src="js/idle-fish.js"></script>
+
+</body>
+</html>
